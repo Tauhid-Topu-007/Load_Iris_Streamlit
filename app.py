@@ -693,16 +693,23 @@ with tab1:
                             3] if predict_species == 'versicolor' else avg_virginica[3])
                     ]
                 })
+
+
+                # Fixed: Using map instead of applymap (deprecated)
+                def color_difference(val):
+                    if isinstance(val, (int, float)):
+                        if val > 0:
+                            return 'color: #27ae60'
+                        elif val < 0:
+                            return 'color: #e74c3c'
+                    return ''
+
+
                 st.dataframe(comparison.style.format({
                     'Your Value': '{:.2f}',
                     'Species Average': '{:.2f}',
                     'Difference': '{:+.2f}'
-                }).applymap(
-                    lambda x: 'color: #27ae60' if isinstance(x, (int,
-                                                                 float)) and x > 0 else 'color: #e74c3c' if isinstance(
-                        x, (int, float)) and x < 0 else '',
-                    subset=['Difference']
-                ), use_container_width=True, hide_index=True)
+                }).map(color_difference, subset=['Difference']), use_container_width=True, hide_index=True)
 
             with col_detail2:
                 st.markdown("#### 🧬 **Species Information**")
@@ -788,7 +795,7 @@ with tab2:
         fig_box.add_trace(go.Box(
             y=species_data['petal length (cm)'],
             name=species.title(),
-            boxmean='sd',  # Fixed: changed from 'boxmeanvisible' to 'boxmean'
+            boxmean='sd',
             marker_color={'setosa': '#4ECDC4', 'versicolor': '#45B7D1', 'virginica': '#96CEB4'}[species],
             hovertemplate='<b>%{x}</b><br>Petal Length: %{y:.2f} cm<extra></extra>'
         ))
